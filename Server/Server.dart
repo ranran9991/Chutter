@@ -1,13 +1,20 @@
 import 'dart:io';
 import 'dart:convert';
 import 'dart:async';
+import 'dart:collection';
+
+import 'package:password/password.dart';
 
 class Server{
   int _port;
   String _ip;
-
+  HashMap<String, Socket> _connected;
+    
   /// Assumes configPath with the IP in the first line and the port in the second line
   Server(String configPath){
+
+    this._connected = new HashMap<String, Socket>();
+
     var f = new File(configPath);
     var content = f.readAsStringSync().split("\n");
     _ip = content[0].trim();

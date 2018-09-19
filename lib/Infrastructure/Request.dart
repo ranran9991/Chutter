@@ -3,7 +3,9 @@ import 'dart:convert';
 
 enum RequestType {
   loginRequest,
-  exitRequest
+  exitRequest,
+  writeMessageRequest,
+  invalidLoginRequest
 }
 
 abstract class Request {
@@ -33,6 +35,9 @@ abstract class Request {
       case RequestType.exitRequest:
         request = new ExitRequest(args[0]);
         break;
+      case RequestType.writeMessageRequest:
+        request = new WriteMessageRequest(args[0], args[1]);
+        break;
     }
     return request;
   }
@@ -49,5 +54,19 @@ class ExitRequest extends Request {
   ExitRequest(String name){
     this.args = new List<String>.from([name]);
     this.requestType = RequestType.exitRequest;
+  }
+}
+
+class WriteMessageRequest extends Request {
+  WriteMessageRequest(String name, String message){
+    this.args = new List<String>.from([name, message]);
+    this.requestType = RequestType.writeMessageRequest;
+  }
+}
+
+class InvalidLoginRequest extends Request {
+  InvalidLoginRequest(){
+    this.args = new List<String>();
+    this.requestType = RequestType.invalidLoginRequest;
   }
 }
