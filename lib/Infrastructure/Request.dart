@@ -1,11 +1,14 @@
 import 'dart:io';
 import 'dart:convert';
+import 'dart:collection';
 
 enum RequestType {
   loginRequest,
   exitRequest,
   writeMessageRequest,
-  invalidLoginRequest
+  invalidLoginRequest,
+  signupRequest,
+  invalidSignupRequest
 }
 
 abstract class Request {
@@ -13,30 +16,43 @@ abstract class Request {
   List<String> args;
 
   String toJSON(){
-    var jsonMap = {
-      "request_type" : requestType.index.toString(),
-      "args" : jsonEncode(args)
-    };
 
-    String jsonText = jsonEncode(jsonMap);
+    Map<String, String> jsonMap = new Map<String, String>();
+    jsonMap["request_type"] = requestType.index.toString();
 
-    return jsonText;
+    if(args != null){
+      jsonMap["args"] = jsonEncode(args);
+    }
+
+    return jsonEncode(jsonMap);
   }
 
   static Request fromJSON(String jsonText){
     var jsonMap = jsonDecode(jsonText);
-    var args = jsonDecode(jsonMap["args"]) as List;
     Request request;
 
     switch(RequestType.values[int.parse(jsonMap["request_type"])]){
       case RequestType.loginRequest:
+        var args = jsonDecode(jsonMap["args"]) as List;
         request = new LoginRequest(args[0], args[1]);
         break;
       case RequestType.exitRequest:
+        var args = jsonDecode(jsonMap["args"]) as List;
         request = new ExitRequest(args[0]);
         break;
       case RequestType.writeMessageRequest:
+        var args = jsonDecode(jsonMap["args"]) as List;
         request = new WriteMessageRequest(args[0], args[1]);
+        break;
+      case RequestType.invalidLoginRequest:
+        request = new InvalidLoginRequest();
+        break;
+      case RequestType.signupRequest:
+        var args = jsonDecode(jsonMap["args"]) as List;
+        request = new SignupRequest(args[0], args[1]);
+        break;
+      case RequestType.invalidSignupRequest:
+        request = new InvalidSignupRequest();
         break;
     }
     return request;
@@ -66,7 +82,20 @@ class WriteMessageRequest extends Request {
 
 class InvalidLoginRequest extends Request {
   InvalidLoginRequest(){
-    this.args = new List<String>();
+    this.args = null;
     this.requestType = RequestType.invalidLoginRequest;
+  }
+}
+
+class SignupRequest extends Request {
+  SignupRequest(String name, String password){
+    this.args = new List<String>.from([name, password]);
+    this.requestType = RequestType.signupRequest;
+  }
+}
+class InvalidSignupRequest extends Request {
+  InvalidSignupRequest(){
+    this.args = null;
+    this.requestType = RequestType.invalidSignupRequest;
   }
 }

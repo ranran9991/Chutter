@@ -5,10 +5,6 @@ import 'Server.dart';
 import 'LoginManager.dart';
 
 void main(){
-  Server server = new Server("C:\Chutter\Infrastructure\config.txt");
+  Server server = new Server("config.txt");
   server.Start();
-
-  
-  
-  
 }

@@ -45,14 +45,17 @@ class Server{
           switch(request.requestType){
             // login request
             case RequestType.loginRequest:
-              // check if account is valid
               String username = request.args[0];
               String password = request.args[1];
               // if user not in database
               if(!this.loginManager.isUserInDatabase(username, password)){
-                Request invalidLoginRequest = new InvalidLoginRequest();
+                InvalidLoginRequest invalidLoginRequest = new InvalidLoginRequest();
                 sock.write(invalidLoginRequest.toJSON());
                 return;
+              }
+              else{
+                sock.write(request.toJSON());
+                _connected.add(sock);
               }
               break;
             // exit request
@@ -68,6 +71,26 @@ class Server{
               }
               break;
             // do nothing
+            case RequestType.signupRequest:
+
+              String username = request.args[0];
+              String password = request.args[1];
+
+              // if user is not in database
+              if(!this.loginManager.isUserInDatabase(username, password)){
+                loginManager.addUser(username, password);
+                // return the same request to the user
+                 sock.write(request.toJSON());
+              }
+              // credentials already taken
+              else{
+                InvalidSignupRequest invalidSignupRequest = new InvalidSignupRequest();
+                
+                sock.write(invalidSignupRequest.toJSON());
+
+              }
+              break;
+            
             default:
               break;
           }

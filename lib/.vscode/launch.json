@@ -6,7 +6,7 @@
     "configurations": [
         {
             "name": "Dart",
-            "program": "lib/main.dart",
+            "program": "C:\\Chutter\\lib\\Server",
             "request": "launch",
             "type": "dart"
         }
