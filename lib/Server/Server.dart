@@ -5,7 +5,6 @@ import 'dart:collection';
 
 import 'LoginManager.dart';
 import '../Infrastructure/Request.dart';
-import 'ChatMessage.dart';
 
 
 class Server{
