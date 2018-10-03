@@ -8,6 +8,8 @@ class SignupScreen extends StatefulWidget{
 class _SignupState extends State<SignupScreen>{
   String _userName = '';
   String _password = '';
+  final _formKey = GlobalKey<FormState>();
+
   CredentialsValidator _validator = new NormalCredentialsValidator();
 
   @override
@@ -63,8 +65,11 @@ class _SignupState extends State<SignupScreen>{
           minWidth: 200.0,
           height: 42.0,
           onPressed: (){
-            // TODO: check if credentials are fine
-            Navigator.of(context).pushNamed('/login');
+            // check if credentials are fine
+            if(_formKey.currentState.validate()){
+              // transfer to next page
+              Navigator.of(context).pushNamed('/login');
+            }
           },
           color: Colors.lightBlueAccent,
           child: Text('Sign up', style: TextStyle(color: Colors.white)),
@@ -72,9 +77,11 @@ class _SignupState extends State<SignupScreen>{
       )
     );
 
-    return Scaffold(
-      backgroundColor: Colors.lightGreenAccent.shade50,
-      body: Center(
+    return Form(
+      key: _formKey,
+      child: Scaffold(
+        backgroundColor: Colors.lightGreenAccent.shade50,
+        body: Center(
         child: ListView(
           shrinkWrap: true,
           padding: EdgeInsets.only(left: 24.0, right: 24.0),
@@ -93,6 +100,7 @@ class _SignupState extends State<SignupScreen>{
           ]
         ),
       ),
+    ),
     );
   }
 }
