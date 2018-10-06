@@ -1,6 +1,5 @@
 import 'dart:io';
 import '../Infrastructure/Request.dart';
-import 'dart:async';
 
 void main() async {
   Socket socket = await Socket.connect("127.0.0.1", 8657);
