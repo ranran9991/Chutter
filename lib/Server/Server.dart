@@ -1,7 +1,5 @@
 import 'dart:io';
 import 'dart:convert';
-import 'dart:async';
-import 'dart:collection';
 
 import 'LoginManager.dart';
 import '../Infrastructure/Request.dart';
@@ -28,7 +26,7 @@ class Server{
     print("port: " + _port.toString());
   }
 
-  void Start(){
+  void start(){
     ServerSocket.bind(_ip, _port)
       .then((serverSocket) {
         serverSocket.listen((socket) {

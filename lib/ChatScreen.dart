@@ -15,6 +15,7 @@ class _ChatState extends State<ChatScreen>{
   final String _name;
   final List<ChatMessage> _messages = <ChatMessage>[];
   final TextEditingController _textController = new TextEditingController();
+  StreamSubscription streamSubscription;
   _ChatState(String name): _name = name;
 
   @override
@@ -25,7 +26,6 @@ class _ChatState extends State<ChatScreen>{
     Stream<List<int>> socket = controller.broadcastSocket;
 
     // subscribe to socket data
-    StreamSubscription streamSubscription;
     streamSubscription = socket.listen((List<int> data){
       Request request = Request.fromJSON(String.fromCharCodes(data));
       if(request.requestType == RequestType.writeMessageRequest){
@@ -94,5 +94,10 @@ class _ChatState extends State<ChatScreen>{
     _textController.clear();
     Controller controller = new Controller();
     controller.sendMessage(this._name, text);
+  }
+
+  void dispose(){
+    super.dispose();
+    streamSubscription.cancel();
   }
 }
