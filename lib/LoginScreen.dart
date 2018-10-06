@@ -1,21 +1,49 @@
 import 'package:flutter/material.dart';
+import 'dart:io';
+import 'dart:async';
 
 import "ChatScreen.dart";
+import "Controller.dart";
+import "Infrastructure/Request.dart";
 
 class LoginScreen extends StatefulWidget{
   _LoginState createState() => new _LoginState();
 }
 
 class _LoginState extends State<LoginScreen>{
-  String _userName = '';
-  String _password = '';
+  final _usernameController = TextEditingController();
+  final _passwordController = TextEditingController();
+  StreamSubscription socketConnection;
   
+  @override
+  void initState(){
+    super.initState();
+    
+    Controller controller = new Controller();
+    Stream<List<int>> socket = controller.broadcastSocket;
+    // subscribe to socket data
+    socketConnection = socket.listen((List<int> data){
+      Request request = Request.fromJSON(String.fromCharCodes(data));
+      if(request.requestType == RequestType.loginRequest){
+        // close subscription when moving to another page
+        socketConnection.cancel().then((_){
+          String username = request.args[0];
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ChatScreen(username),
+              ),
+            );
+        });
+      }
+    });
+  }
   @override
   Widget build(BuildContext context){
     final username = TextFormField(
+      controller: _usernameController,
       keyboardType: TextInputType.text,
       autofocus: false,
-      initialValue: '',
       decoration: InputDecoration(
         hintText: 'User name',
         contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
@@ -24,8 +52,8 @@ class _LoginState extends State<LoginScreen>{
     );
 
     final password = TextFormField(
+      controller: _passwordController,
       autofocus: false,
-      initialValue: '',
       obscureText: true,
       decoration: InputDecoration(
         hintText: 'Password',
@@ -44,13 +72,8 @@ class _LoginState extends State<LoginScreen>{
           minWidth: 200.0,
           height: 42.0,
           onPressed: (){
-            // TODO: check if password is fine
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ChatScreen("Mario"),
-              ),
-            );
+            Controller controller = new Controller();
+            controller.sendLoginRequest(_usernameController.text, _passwordController.text);
           },
           color: Colors.lightBlueAccent,
           child: Text('Log In', style: TextStyle(color: Colors.white)),
@@ -68,8 +91,10 @@ class _LoginState extends State<LoginScreen>{
           minWidth: 200.0,
           height: 42.0,
           onPressed: (){
-            // TODO: check if password is fine
-            Navigator.of(context).pushNamed('/signup');
+            // close stream subscription
+            socketConnection.cancel().then((_){
+              Navigator.of(context).pushNamed('/signup');
+            });
           },
           color: Colors.lightGreenAccent,
           child: Text('Don\'t have an account? Sign up!', style: TextStyle(color: Colors.white)),
@@ -100,5 +125,10 @@ class _LoginState extends State<LoginScreen>{
         ),
       ),
     );
+  }
+  @override
+  void dispose() async{
+    super.dispose();
+    await socketConnection.cancel();
   }
 }

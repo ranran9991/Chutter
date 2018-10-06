@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 
+import "Infrastructure/Request.dart";
+import 'Controller.dart';
 import 'ChatMessage.dart';
 
 class ChatScreen extends StatefulWidget{
@@ -13,6 +16,26 @@ class _ChatState extends State<ChatScreen>{
   final List<ChatMessage> _messages = <ChatMessage>[];
   final TextEditingController _textController = new TextEditingController();
   _ChatState(String name): _name = name;
+
+  @override
+  void initState(){
+    super.initState();
+
+    Controller controller = new Controller();
+    Stream<List<int>> socket = controller.broadcastSocket;
+
+    // subscribe to socket data
+    StreamSubscription streamSubscription;
+    streamSubscription = socket.listen((List<int> data){
+      Request request = Request.fromJSON(String.fromCharCodes(data));
+      if(request.requestType == RequestType.writeMessageRequest){
+        setState(() {
+          ChatMessage chatMessage = new ChatMessage(request.args[0], request.args[1], DateTime.now().toLocal());
+          _messages.insert(0, chatMessage);
+        });
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,13 +92,7 @@ class _ChatState extends State<ChatScreen>{
 
   void _handleSubmitted(String text){
     _textController.clear();
-    ChatMessage message = new ChatMessage(
-      this._name,
-      text,
-      DateTime.now()
-    );
-    setState((){
-      _messages.insert(0, message);
-    });
+    Controller controller = new Controller();
+    controller.sendMessage(this._name, text);
   }
 }

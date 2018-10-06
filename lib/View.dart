@@ -5,11 +5,8 @@ import 'LoginScreen.dart';
 import 'SignupScreen.dart';
 
 class View extends StatelessWidget{
+  
   @override
-
-  final Controller _cont;
-  View(Controller controller) : _cont = controller;
-
   Widget build(BuildContext ctxt){
     return MaterialApp( 
       home: LoginScreen(),
@@ -17,6 +14,8 @@ class View extends StatelessWidget{
         '/login': (context) =>  LoginScreen(),
         '/signup' : (context) => SignupScreen(),
       },
+      
     );
   }
+
 }

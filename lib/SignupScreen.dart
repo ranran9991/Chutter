@@ -1,21 +1,45 @@
+import 'dart:io';
+import 'dart:async';
 import 'package:flutter/material.dart';
+
 import 'CredentialsValidator.dart';
+import 'Infrastructure/Request.dart';
+import 'Controller.dart';
 
 class SignupScreen extends StatefulWidget{
   _SignupState createState() => new _SignupState();
 }
 
 class _SignupState extends State<SignupScreen>{
-  String _userName = '';
-  String _password = '';
-  final _formKey = GlobalKey<FormState>();
 
+  final _formKey = GlobalKey<FormState>();
+  final _usernameController = TextEditingController();
+  final _passwordController = TextEditingController();
   CredentialsValidator _validator = new NormalCredentialsValidator();
+  @override
+  void initState(){
+    super.initState();
+
+    Controller controller = new Controller();
+    Stream<List<int>> socket = controller.broadcastSocket;
+
+    // subscribe to socket data
+    StreamSubscription streamSubscription;
+    streamSubscription = socket.listen((List<int> data){
+      Request request = Request.fromJSON(String.fromCharCodes(data));
+      if(request.requestType == RequestType.signupRequest){
+        // close subscription when moving to another page
+        streamSubscription.cancel();
+        Navigator.of(context).pushNamed('/login');
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context){
 
     final username = TextFormField(
+      controller: _usernameController,
       validator: (value){
         if(value.isEmpty){
           return 'Please enter a username';
@@ -26,7 +50,6 @@ class _SignupState extends State<SignupScreen>{
       },
       keyboardType: TextInputType.text,
       autofocus: false,
-      initialValue: '',
       decoration: InputDecoration(
         hintText: 'user name',
         contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
@@ -35,6 +58,7 @@ class _SignupState extends State<SignupScreen>{
     );
 
     final password = TextFormField(
+      controller: _passwordController,
       validator: (value) {
         if(value.isEmpty){
           return 'Please enter a password';
@@ -44,7 +68,6 @@ class _SignupState extends State<SignupScreen>{
         }
       },
       autofocus: false,
-      initialValue: '',
       obscureText: true,
       decoration: InputDecoration(
         hintText: 'password',
@@ -67,8 +90,9 @@ class _SignupState extends State<SignupScreen>{
           onPressed: (){
             // check if credentials are fine
             if(_formKey.currentState.validate()){
-              // transfer to next page
-              Navigator.of(context).pushNamed('/login');
+              // send message to server
+              Controller controller = new Controller();
+              controller.sendSignupRequest(_usernameController.text, _passwordController.text);
             }
           },
           color: Colors.lightBlueAccent,

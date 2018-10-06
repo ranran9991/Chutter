@@ -19,11 +19,13 @@ class Server{
     loginManager = ListLoginManager();
     // get ip and port from config file
     var f = new File(configPath);
-    var content = f.readAsStringSync().split("\n");
-    _ip = content[0].trim();
-    print(_ip);
-    _port = int.parse(content[1].trim());
-    print(_port);
+    var content = f.readAsStringSync();
+    var configJson = jsonDecode(content);
+    _ip = configJson["ip"];
+    print("Connected on: ");
+    print("IP: " + _ip);
+    _port = int.parse(configJson["port"]);
+    print("port: " + _port.toString());
   }
 
   void Start(){

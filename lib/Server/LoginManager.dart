@@ -15,12 +15,10 @@ abstract class LoginManager {
 */
 class ListLoginManager implements LoginManager {
   static final ListLoginManager _databaseManager = new ListLoginManager._internal();
-  HashMap<String, String> _database;
   factory ListLoginManager(){
-    
     return _databaseManager;
   }
-
+  HashMap<String, String> _database;
   ListLoginManager._internal(){
     _database = new HashMap<String, String>();
   }
