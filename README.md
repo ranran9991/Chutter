@@ -10,3 +10,6 @@ Requirements:
 To run:
 1. Change both Config.json files in lib/Server and in assets to fit your needs
 2. Server: go to lib/Server and run "dart main.dart", Client: run "flutter run"
+
+![Alt text](screenshots/flutter_01.png?raw=true "screenshot_1")
+![Alt text](screenshots/flutter_02.png?raw=true "screenshot_2")
