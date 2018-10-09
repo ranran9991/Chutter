@@ -11,5 +11,5 @@ To run:
 1. Change both Config.json files in lib/Server and in assets to fit your needs
 2. Server: go to lib/Server and run "dart main.dart", Client: run "flutter run"
 
-![Screenshot](assets/flutter_01)
-![Screenshot](assets/flutter_02)
+![Screenshot](assets/flutter_01.png)
+![Screenshot](assets/flutter_02.png)
