@@ -12,4 +12,3 @@ To run:
 2. Server: go to lib/Server and run "dart main.dart", Client: run "flutter run"
 
 ![Screenshot](screenshots/flutter_01.png)
-![Screenshot](screenshots/flutter_02.png)
